@@ -14,7 +14,7 @@ workflows:
       - path-filtering/filter:
           name: check-updated-files
           mapping: |
-            package.json|yarn.lock|Dockerfile run-build-ts-job true
+            package.json|yarn.lock|packages/* run-build-ts-job true
             scarre/.* run-build-scarre-job true
             yardi-restore/.* run-build-yardi-restore-job true
           base-revision: main
@@ -23,16 +23,13 @@ workflows:
             branches:
               ignore:
                 - main
-      - path-filtering/filter:
-          name: run-all
-          mapping: |
-            run-build-ts-job true
-            run-build-scarre-job true
-            run-build-yardi-restore-job true
-          base-revision: main
+      - path-filtering/set-parameters:
+          name: set-parameters
           config-path: .circleci/continue_config.yml
+          base-revision: main
+          mapping: |
+            all-jobs true
           filters:
             branches:
               only:
                 - main
-              
