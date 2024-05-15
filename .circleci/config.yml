@@ -20,7 +20,7 @@ workflows:
   configure-worklow:
     jobs:
       - path-filtering/filter:
-          name: check-changed-files
+          name: check-and-schedule-build-test-workflow
           mapping: |
             package.json|yarn.lock|packages/.* run-build-test-ts true
             scala/.* run-build-test-scala true
@@ -34,12 +34,9 @@ workflows:
                 - develop
                 - release
       - path-filtering/filter:
-          name: schedule-workflow
+          name: schedule-deploy-workflow
           mapping: |
-            package.json|yarn.lock|packages/.* run-build-test-ts true
-            scala/.* run-build-test-scala true
-            santa_barbara_restore/.* run-build-test-santa_barbara-restore true
-            .circleci/.* run-circleci-config true
+            .* deploy true
           config-path: .circleci/continue_config.yml
           base-revision: develop
           filters:
