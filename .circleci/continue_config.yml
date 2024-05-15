@@ -152,7 +152,7 @@ workflows:
     jobs:
       - build_santa_barbara_restore
   deploy-dev-workflow:
-    when: <<pipeline.git.branch>> == "develop"
+    when: <<pipeline.git.branch>> === "develop"
     jobs:
       - build_and_test
       - build_scala
