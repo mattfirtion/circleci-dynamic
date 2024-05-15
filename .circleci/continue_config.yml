@@ -1,0 +1,32 @@
+version: 2.1
+
+parameters:
+  run-build-service-1-job:
+    type: boolean
+    default: false
+  run-build-service-2-job:
+    type: boolean
+    default: false
+
+jobs:
+  run-build-service-1-job:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - run: echo "Building service 1"
+
+  run-build-service-2-job:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - run: echo "Building service 2"
+
+workflows:
+  service-1:
+    when: << pipeline.parameters.run-build-service-1-job >>
+    jobs:
+      - run-build-service-1-job
+  service-2:
+    when: << pipeline.parameters.run-build-service-2-job >>
+    jobs:
+      - run-build-service-2-job
