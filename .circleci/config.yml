@@ -36,7 +36,7 @@ workflows:
       - path-filtering/filter:
           name: schedule-deploy-workflow
           mapping: |
-            .* deploy true
+            .* run-deploy true
           config-path: .circleci/continue_config.yml
           base-revision: develop
           filters:
