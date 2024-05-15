@@ -26,7 +26,9 @@ workflows:
       - path-filtering/filter:
           name: run-all
           mapping: |
-            * all-jobs true
+            * run-build-ts-job true
+            * run-build-scarre-job true
+            * run-build-yardi-restore-job true
           base-revision: main
           config-path: .circleci/continue_config.yml
           filters:
