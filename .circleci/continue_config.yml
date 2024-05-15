@@ -1,0 +1,216 @@
+version: 2.1
+
+parameters:
+  run-build-test-ts:
+    type: boolean
+    default: false
+  run-build-test-scala:
+    type: boolean
+    default: false
+  run-build-test-santa_barbara-restore:
+    type: boolean
+    default: false
+  run-circleci-config:
+    type: boolean
+    default: false
+  
+executors:
+  node:
+    docker:
+      - image: cimg/node:18.17.1
+    resource_class: small
+  base:
+    docker:
+      - image: cimg/base:2024.05
+    resource_class: small
+
+commands:
+  cdk-deploy:
+    description: "Deploy backend using CDK"
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "cdk deploy"
+          command: echo "The current run name is $CIRCLE_JOB"
+      - run:
+          command: cat hello.txt
+  restore-yarn-cache:
+    description: "Restore Yarn cache"
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  save-yarn-cache:
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  pre-process:
+    description: "Setup build environment"
+    steps:
+      - checkout
+      - restore-yarn-cache
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  post-process:
+    description: "Tidy up the build environment"
+    steps:
+      - save-yarn-cache
+  setup-git-crypt:
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  create-release-tag:
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+
+jobs:
+  build_and_test:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - pre-process
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+      - post-process
+  build_santa_barbara_restore:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  build_scala:
+    executor: base
+    steps:
+      - checkout
+      - run:
+          command: env
+      - run:
+          command: ./scala/build.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "hello.txt"
+
+  integration_test:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  git_crypt_check:
+    executor: base
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+  cdk_synth_core:
+    executor: base
+    environment:
+      STAGE: test
+      DBNAME: main
+      CDK_NEW_BOOTSTRAP: 1
+      DBUSER: foo
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+      - attach_workspace:
+          at: .
+      - run:
+          command: cat hello.txt
+
+  deploy_dev:
+    executor: base
+    environment:
+      STAGE: dev
+      DBNAME: main
+      CDK_NEW_BOOTSTRAP: 1
+      DBUSER: foo
+    steps:
+      - run:
+          command: echo "The current run name is $CIRCLE_JOB"
+
+  deploy_production:
+    executor: base
+    environment:
+      STAGE: prod
+      DBNAME: main
+      DBUSER: foo
+    steps:
+      - cdk-deploy
+      - setup-git-crypt
+      - create-release-tag
+  show-pipeline-branch:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          name: show pipeline number
+          command: |
+              echo "pipeline.git.branch <<pipeline.git.branch>>"
+
+workflows:
+  build-test-ts-workflow:
+    when: 
+      or:
+        - << pipeline.parameters.run-build-test-ts >>
+        - << pipeline.parameters.run-circleci-config >>
+    jobs:
+      - build_and_test
+      - integration_test
+  build-test-scala-workflow:
+    when: 
+      or:
+        - << pipeline.parameters.run-build-test-scala >>
+        - << pipeline.parameters.run-circleci-config >>
+    jobs:
+      - build_scala
+  build-test-santa_barbara-restore-workflow:
+    when:
+      or:
+        - << pipeline.parameters.run-build-test-santa_barbara-restore >>
+        - << pipeline.parameters.run-circleci-config >>
+    jobs:
+      - build_santa_barbara_restore
+  deploy-dev-workflow:
+    when:
+      equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - show-pipeline-branch
+      - build_and_test
+      - build_scala
+      - build_santa_barbara_restore
+      - git_crypt_check
+      - cdk_synth_core:
+          requires:
+            - build_and_test
+            - build_scala
+            - build_santa_barbara_restore
+          filters:
+            branches:
+              only:
+                - develop
+  deploy-production-workflow:
+    when:
+      equal: [ release, << pipeline.git.branch >> ]
+    jobs:
+      - build_and_test
+      - build_scala
+      - build_santa_barbara_restore
+      - git_crypt_check
+      - cdk_synth_core:
+          requires:
+            - build_and_test
+            - build_scala
+            - build_santa_barbara_restore
+          filters:
+            branches:
+              only:
+                - release
+      - integration_test
+      - deploy_production:
+          requires:
+            - build_scala
+          filters:
+            branches:
+              only:
+                - release

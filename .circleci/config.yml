@@ -1,164 +1,49 @@
 version: 2.1
 
-executors:
-  node:
-    docker:
-      - image: cimg/node:18.17.1
-    resource_class: small
-  base:
-    docker:
-      - image: cimg/base:2024.05
-    resource_class: small
+setup: true
 
-commands:
-  cdk-deploy:
-    description: "Deploy backend using CDK"
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: "cdk deploy"
-          command: echo "The current run name is $CIRCLE_JOB"
-      - run:
-          command: cat hello.txt
-  restore-yarn-cache:
-    description: "Restore Yarn cache"
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  save-yarn-cache:
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  pre-process:
-    description: "Setup build environment"
-    steps:
-      - checkout
-      - restore-yarn-cache
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  post-process:
-    description: "Tidy up the build environment"
-    steps:
-      - save-yarn-cache
-  setup-git-crypt:
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  create-release-tag:
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
+orbs:
+  path-filtering: circleci/path-filtering@1.0.0
 
 jobs:
-  build_and_test:
-    docker:
-      - image: cimg/base:2024.05
-    steps:
-      - pre-process
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-      - post-process
-  build_santa_barbara_restore:
+  print-things:
     docker:
       - image: cimg/base:2024.05
     steps:
       - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  build_scala:
-    executor: base
-    steps:
-      - checkout
-      - run:
-          command: env
-      - run:
-          command: ./build_scala/build.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - "hello.txt"
-
-  integration_test:
-    docker:
-      - image: cimg/base:2024.05
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  git_crypt_check:
-    executor: base
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-  cdk_synth_core:
-    executor: base
-    environment:
-      STAGE: test
-      DBNAME: main
-      CDK_NEW_BOOTSTRAP: 1
-      DBUSER: foo
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-      - attach_workspace:
-          at: .
-      - run:
-          command: cat hello.txt
-
-  deploy_dev:
-    executor: base
-    environment:
-      STAGE: dev
-      DBNAME: main
-      CDK_NEW_BOOTSTRAP: 1
-      DBUSER: foo
-    steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
-
-  deploy_production:
-    executor: base
-    environment:
-      STAGE: prod
-      DBNAME: main
-      DBUSER: foo
-    steps:
-      - cdk-deploy
-      - setup-git-crypt
-      - create-release-tag
+          name: Print things
+          command: |
+            echo "pipeline.git."
+            echo "The current run name is $CIRCLE_JOB"
 
 workflows:
-  Build_And_Deploy:
+  configure-worklow:
     jobs:
-      - build_and_test
-      - build_scala
-      - build_santa_barbara_restore
-      - git_crypt_check
-      - cdk_synth_core:
-          requires:
-            - build_and_test
-            - build_scala
-            - integration_test
-            - build_santa_barbara_restore
+      - path-filtering/filter:
+          name: check-changed-files
+          mapping: |
+            package.json|yarn.lock|packages/.* run-build-test-ts true
+            scala/.* run-build-test-scala true
+            santa_barbara_restore/.* run-build-test-santa_barbara-restore true
+            .circleci/.* run-circleci-config true
+          config-path: .circleci/continue_config.yml
+          base-revision: develop
           filters:
             branches:
               ignore:
                 - develop
                 - release
-      - integration_test
-      - deploy_dev:
-          requires:
-            - build_scala
+      - path-filtering/filter:
+          name: schedule-workflow
+          mapping: |
+            package.json|yarn.lock|packages/.* run-build-test-ts true
+            scala/.* run-build-test-scala true
+            santa_barbara_restore/.* run-build-test-santa_barbara-restore true
+            .circleci/.* run-circleci-config true
+          config-path: .circleci/continue_config.yml
+          base-revision: develop
           filters:
             branches:
               only:
                 - develop
-      - deploy_production:
-          requires:
-            - build_scala
-          post-steps:
-            - run:
-                command: echo "The current run name is $CIRCLE_JOB"
-          filters:
-            branches:
-              only:
                 - release
