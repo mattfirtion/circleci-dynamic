@@ -83,7 +83,7 @@ jobs:
       - run:
           command: env
       - run:
-          command: ./build_scala/build.sh
+          command: ./scala/build.sh
       - persist_to_workspace:
           root: .
           paths:

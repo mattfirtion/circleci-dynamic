@@ -5,9 +5,21 @@ setup: true
 orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
+jobs:
+  show-pipeline-number:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          name: show pipeline number
+          command: |
+                   echo "pipeline.number <<pipeline.number>>"
+                   echo "pipeline.number from dollar: $PIPELINE_NUMBER"
+
 workflows:
   build-worklow:
     jobs:
+      - show-pipeline-number
       - path-filtering/filter:
           name: check-changed-files
           mapping: |
