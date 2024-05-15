@@ -22,8 +22,4 @@ workflows:
           filters:
             branches:
               ignore:
-                - main
-      - path-filtering/set-parameters:
-          mapping: |
-            src/.* test-changes true
-            src/examples/.* string-example "value"                
+                - main          

@@ -28,7 +28,7 @@ jobs:
           root: .
           paths:
             - hello.txt
-  deploy:
+  deploy-job:
     docker:
       - image: cimg/base:2020.01
     steps:
@@ -46,7 +46,7 @@ workflows:
   deploy:
     when: << pipeline.parameters.all-jobs >>
     jobs:
-      - deploy
+      - deploy-job
     depends_on:
       - build-and-test-ts
       - build-and-test-scarre
