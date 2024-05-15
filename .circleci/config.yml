@@ -23,3 +23,14 @@ workflows:
             branches:
               ignore:
                 - main
+      - path-filtering/filter:
+          name: run-all
+          mapping: |
+            * all-jobs true
+          base-revision: main
+          config-path: .circleci/continue_config.yml
+          filters:
+            branches:
+              only:
+                - main
+              

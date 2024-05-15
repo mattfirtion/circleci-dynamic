@@ -7,6 +7,9 @@ parameters:
   run-build-scarre-job:
     type: boolean
     default: false
+  all-jobs:
+    type: boolean
+    default: false
 
 jobs:
   run-build-service-1-job:
@@ -21,6 +24,12 @@ jobs:
     steps:
       - run: echo "Building service 2"
 
+  deploy:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - run: echo "Deploying"
+
 workflows:
   build-and-test-ts:
     when: << pipeline.parameters.run-build-ts-job >>
@@ -30,3 +39,10 @@ workflows:
     when: << pipeline.parameters.run-build-scarre-job >>
     jobs:
       - run-build-service-2-job
+  deploy:
+    when: << pipeline.parameters.all-jobs >>
+    jobs:
+      - deploy
+    depends_on:
+      - build-and-test-ts
+      - build-and-test-scarre
