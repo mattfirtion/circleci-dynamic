@@ -9,10 +9,10 @@ orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
 workflows:
-  always-run:
+  workflow-setup:
     jobs:
       - path-filtering/filter:
-          name: check-updated-files
+          name: set-changed-project-parameters
           mapping: |
             package.json|yarn.lock|packages/* run-build-ts-job true
             scarre/.* run-build-scarre-job true
@@ -22,4 +22,16 @@ workflows:
           filters:
             branches:
               ignore:
-                - main          
+                - main
+      - path-filtering/filter:
+            name: set-all-jobs-true
+            mapping: |
+              package.json|yarn.lock|packages/* run-build-ts-job true
+              scarre/.* run-build-scarre-job true
+              yardi-restore/.* run-build-yardi-restore-job true
+            base-revision: main
+            config-path: .circleci/continue_config.yml
+            filters:
+              branches:
+                only:
+                  - main
