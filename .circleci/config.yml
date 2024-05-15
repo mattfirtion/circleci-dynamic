@@ -5,10 +5,9 @@ setup: true
 orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
-jobs:
-  setup:
-    executor: path-filter/default
-    steps:
+workflows:
+  build-worklow:
+    jobs:
       - path-filtering/filter:
           name: check-updated-files
           mapping: |
