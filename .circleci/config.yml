@@ -22,9 +22,28 @@ workflows:
       - path-filtering/filter:
           name: check-changed-files
           mapping: |
-            package.json|yarn.lock|packages/*/* run-build-test-ts true
-            scala/*/* run-build-test-scala true
-            santa_barbara_restore/*/* run-build-test-santa_barbara-restore true
-            .circleci/* run-circleci-config true
+            package.json|yarn.lock|packages/.* run-build-test-ts true
+            scala/.* run-build-test-scala true
+            santa_barbara_restore/.* run-build-test-santa_barbara-restore true
+            .circleci/.* run-circleci-config true
           config-path: .circleci/continue_config.yml
           base-revision: develop
+          filters:
+            branches:
+              ignore:
+                - develop
+                - release
+      - path-filtering/filter:
+          name: schedule-workflow
+          mapping: |
+            package.json|yarn.lock|packages/.* run-build-test-ts true
+            scala/.* run-build-test-scala true
+            santa_barbara_restore/.* run-build-test-santa_barbara-restore true
+            .circleci/.* run-circleci-config true
+          config-path: .circleci/continue_config.yml
+          base-revision: develop
+          filters:
+            branches:
+              only:
+                - develop
+                - release
