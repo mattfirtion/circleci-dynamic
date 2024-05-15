@@ -113,8 +113,9 @@ jobs:
       DBNAME: main
       DBUSER: foo
     steps:
-      - run:
-          command: echo "The current run name is $CIRCLE_JOB"
+      - cdk-deploy
+      - setup-git-crypt
+      - create-release-tag
 
 workflows:
   Build_And_Deploy:
