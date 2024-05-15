@@ -13,8 +13,9 @@ jobs:
       - run:
           name: show pipeline number
           command: |
+                   echo "pipeline <<pipeline>>"
+                   echo "pipeline.git.branch <<pipeline.git.branch>>"
                    echo "pipeline.number <<pipeline.number>>"
-                   echo "pipeline.number from dollar: $PIPELINE_NUMBER"
 
 workflows:
   build-worklow:
