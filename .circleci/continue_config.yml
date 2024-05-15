@@ -188,7 +188,7 @@ workflows:
       - build_scala
       - build_santa_barbara_restore
       - git_crypt_check
-      - cdk_synth_core:
+      - deploy_dev:
           requires:
             - build_and_test
             - build_scala
