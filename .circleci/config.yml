@@ -15,3 +15,4 @@ workflows:
             scala/**/* run-build-test-scarre true
             yardi-restore/**/* run-build-test-yardi-restore true
           config-path: ./circleci/continue_config.yml
+          base-revision: << pipeline.git.base_revision >>
