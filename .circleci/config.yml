@@ -4,17 +4,23 @@ executors:
   node:
     docker:
       - image: cimg/node:18.17.1
+    resource_class: small
   base:
     docker:
       - image: cimg/base:2024.05
+    resource_class: small
 
 commands:
   cdk-deploy:
     description: "Deploy backend using CDK"
     steps:
+      - attach_workspace:
+          at: .
       - run:
           name: "cdk deploy"
           command: echo "The current run name is $CIRCLE_JOB"
+      - run:
+          command: cat hello.txt
   restore-yarn-cache:
     description: "Restore Yarn cache"
     steps:
@@ -60,12 +66,18 @@ jobs:
       - run:
           command: echo "The current run name is $CIRCLE_JOB"
   build_scala:
-    docker:
-      - image: cimg/base:2024.05
+    executor: base
     steps:
       - checkout
       - run:
-          command: echo "The current run name is $CIRCLE_JOB"
+          command: env
+      - run:
+          command: ./build_scala/build.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "hello.txt"
+
   integration_test:
     docker:
       - image: cimg/base:2024.05
@@ -87,6 +99,10 @@ jobs:
     steps:
       - run:
           command: echo "The current run name is $CIRCLE_JOB"
+      - attach_workspace:
+          at: .
+      - run:
+          command: cat hello.txt
 
   deploy_dev:
     executor: base
