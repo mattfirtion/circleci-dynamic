@@ -5,24 +5,12 @@ setup: true
 orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
-jobs:
-  show-pipeline-number:
-    docker:
-      - image: cimg/base:2024.05
-    steps:
-      - run:
-          name: show pipeline number
-          command: |
-                   echo "pipeline.git.branch <<pipeline.git.branch>>"
-                   echo "pipeline.number <<pipeline.number>>"
-
 workflows:
   configure-worklow:
     jobs:
-      - show-pipeline-number
       - path-filtering/filter:
           name: check-changed-files
           mapping: |
-            package.json|yarn.lock run-build-test-ts true
+            package.json|yarn.lock|packages/**/* run-build-test-ts true
           config-path: .circleci/continue_config.yml
           base-revision: << pipeline.git.base_revision >>
