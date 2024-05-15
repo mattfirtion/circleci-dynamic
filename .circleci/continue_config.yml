@@ -152,7 +152,7 @@ workflows:
     jobs:
       - build_santa_barbara_restore
   deploy-dev-workflow:
-    when: << pipeline.git.branch >> == "origin/develop"
+    when: <<pipeline.git.branch>> == "develop"
     jobs:
       - build_and_test
       - build_scala
@@ -168,6 +168,7 @@ workflows:
               only:
                 - develop
   # deploy-production-workflow:
+  #   when: << pipeline.git.branch >> == "release"
   #   jobs:
   #     - build_and_test
   #     - build_scala
