@@ -11,6 +11,6 @@ workflows:
       - path-filtering/filter:
           name: check-changed-files
           mapping: |
-            package.json|yarn.lock|packages/**/* run-build-test-ts true
+            package.json|yarn.lock|packages/*/* run-build-test-ts true
           config-path: .circleci/continue_config.yml
           base-revision: << pipeline.git.base_revision >>
