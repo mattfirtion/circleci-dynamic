@@ -13,6 +13,9 @@ parameters:
   run-circleci-config:
     type: boolean
     default: false
+  run-deploy:
+    type: boolean
+    default: false
   
 executors:
   node:
@@ -150,10 +153,13 @@ jobs:
 
 workflows:
   build-test-ts-workflow:
-    when: 
-      or:
-        - << pipeline.parameters.run-build-test-ts >>
-        - << pipeline.parameters.run-circleci-config >>
+    when:
+      and:
+        - or:
+            - << pipeline.parameters.run-build-test-ts >>
+            - << pipeline.parameters.run-circleci-config >>
+        - not:
+            - << pipeline.parameters.deploy >>
     jobs:
       - build_and_test
       - integration_test
