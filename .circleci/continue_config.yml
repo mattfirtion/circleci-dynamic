@@ -23,7 +23,11 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - run: echo "Building service 2"
-
+      - run: echo "Hello, today is $(date)" > hello.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - hello.txt
   deploy:
     docker:
       - image: cimg/base:2020.01
