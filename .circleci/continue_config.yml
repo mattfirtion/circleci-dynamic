@@ -1,10 +1,10 @@
 version: 2.1
 
 parameters:
-  run-build-service-1-job:
+  run-build-ts-job:
     type: boolean
     default: false
-  run-build-service-2-job:
+  run-build-scarre-job:
     type: boolean
     default: false
 
@@ -22,11 +22,11 @@ jobs:
       - run: echo "Building service 2"
 
 workflows:
-  service-1:
-    when: << pipeline.parameters.run-build-service-1-job >>
+  build-and-test-ts:
+    when: << pipeline.parameters.run-build-ts-job >>
     jobs:
       - run-build-service-1-job
-  service-2:
-    when: << pipeline.parameters.run-build-service-2-job >>
+  build-and-test-scarre:
+    when: << pipeline.parameters.run-build-scarre-job >>
     jobs:
       - run-build-service-2-job
