@@ -129,12 +129,8 @@ workflows:
                 - develop
                 - release
       - integration_test
-      - queue/block_workflow: # https://eddiewebb.github.io/circleci-queue/
-          only-on-branch: develop
-          time: "20"
       - deploy_dev:
           requires:
-            - queue/block_workflow
             - build_scala
           filters:
             branches:
