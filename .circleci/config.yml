@@ -9,8 +9,8 @@ workflows:
   build-worklow:
     jobs:
       - path-filtering/filter:
-          name: check-updated-files
+          name: check-changed-files
           mapping: |
             package.json run-build-test-ts true
-          config-path: ./circleci/continue_config.yml
+          config-path: .circleci/continue_config.yml
           base-revision: << pipeline.git.base_revision >>
