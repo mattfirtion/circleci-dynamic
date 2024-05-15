@@ -155,11 +155,13 @@ workflows:
   build-test-ts-workflow:
     when:
       and:
+        - not:
+            matches:
+              pattern: "^develop$|^release$"
+              value: << pipeline.git.branch >>
         - or:
             - << pipeline.parameters.run-build-test-ts >>
             - << pipeline.parameters.run-circleci-config >>
-        - not:
-            - << pipeline.parameters.deploy >>
     jobs:
       - build_and_test
       - integration_test
