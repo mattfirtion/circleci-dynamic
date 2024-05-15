@@ -136,6 +136,14 @@ jobs:
       - cdk-deploy
       - setup-git-crypt
       - create-release-tag
+  show-pipeline-branch:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          name: show pipeline number
+          command: |
+              echo "pipeline.git.branch <<pipeline.git.branch>>"
 
 workflows:
   build-test-ts-workflow:
@@ -152,8 +160,11 @@ workflows:
     jobs:
       - build_santa_barbara_restore
   deploy-dev-workflow:
-    when: <<pipeline.git.branch>> === "develop"
+    when:
+      condition:
+        equal: << pipeline.git.branch >>,  "develop"]
     jobs:
+      - show-pipeline-branch
       - build_and_test
       - build_scala
       - build_santa_barbara_restore
