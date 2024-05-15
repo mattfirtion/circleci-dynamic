@@ -60,12 +60,17 @@ jobs:
       - run:
           command: echo "The current run name is $CIRCLE_JOB"
   build_scala:
-    docker:
-      - image: cimg/base:2024.05
+    executor: base
+    working_directory: ~/project/build_scala
     steps:
       - checkout
       - run:
-          command: echo "The current run name is $CIRCLE_JOB"
+          command: ./build.sh
+      - persist_to_workspace:
+          root: ~/project/build_scala
+          paths:
+            - "hello.txt"
+
   integration_test:
     docker:
       - image: cimg/base:2024.05
