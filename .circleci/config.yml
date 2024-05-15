@@ -12,6 +12,6 @@ workflows:
           name: check-updated-files
           mapping: |
             package.json|yarn.lock|packages/**/* run-build-test-ts true
-            scarre/**/* run-build-test-scarre true
+            scala/**/* run-build-test-scarre true
             yardi-restore/**/* run-build-test-yardi-restore true
           config-path: ./circleci/continue_config.yml
