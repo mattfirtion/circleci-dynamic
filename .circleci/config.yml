@@ -19,3 +19,7 @@ workflows:
             yardi-restore/.* run-build-yardi-restore-job true
           base-revision: main
           config-path: .circleci/continue_config.yml
+          filters:
+            branches:
+              ignore:
+                - main
