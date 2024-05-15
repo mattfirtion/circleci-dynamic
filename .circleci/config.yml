@@ -5,6 +5,17 @@ setup: true
 orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
+jobs:
+  print-things:
+    docker:
+      - image: cimg/base:2024.05
+    steps:
+      - run:
+          name: Print things
+          command: |
+            echo "pipeline.git."
+            echo "The current run name is $CIRCLE_JOB"
+
 workflows:
   configure-worklow:
     jobs:
@@ -16,4 +27,4 @@ workflows:
             santa_barbara_restore/*/* run-build-test-santa_barbara-restore true
             .circleci/* run-circleci-config true
           config-path: .circleci/continue_config.yml
-          base-revision: << pipeline.git.base_revision >>
+          base-revision: develop
