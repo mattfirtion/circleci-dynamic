@@ -162,7 +162,7 @@ workflows:
   deploy-dev-workflow:
     when:
       condition:
-        equal: << pipeline.git.branch >>,  "develop"]
+        equal: [<< pipeline.git.branch >>,  "develop"]
     jobs:
       - show-pipeline-branch
       - build_and_test
