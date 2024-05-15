@@ -13,7 +13,6 @@ jobs:
       - run:
           name: show pipeline number
           command: |
-                   echo "pipeline <<pipeline>>"
                    echo "pipeline.git.branch <<pipeline.git.branch>>"
                    echo "pipeline.number <<pipeline.number>>"
 
