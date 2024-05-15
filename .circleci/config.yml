@@ -24,12 +24,6 @@ workflows:
               ignore:
                 - main
       - path-filtering/set-parameters:
-          name: set-parameters
-          config-path: .circleci/continue_config.yml
-          base-revision: main
           mapping: |
-            all-jobs true
-          filters:
-            branches:
-              only:
-                - main
+            src/.* test-changes true
+            src/examples/.* string-example "value"                
