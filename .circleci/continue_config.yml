@@ -161,8 +161,9 @@ workflows:
       - build_santa_barbara_restore
   deploy-dev-workflow:
     when:
-      condition:
-        equal: [<< pipeline.git.branch >>,  "develop"]
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ staging, << pipeline.git.branch >> ]
     jobs:
       - show-pipeline-branch
       - build_and_test
