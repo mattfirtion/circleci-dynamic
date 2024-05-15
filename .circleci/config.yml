@@ -14,9 +14,13 @@ commands:
   cdk-deploy:
     description: "Deploy backend using CDK"
     steps:
+      - attach_workspace:
+          at: .
       - run:
           name: "cdk deploy"
           command: echo "The current run name is $CIRCLE_JOB"
+      - run:
+          command: cat hello.txt
   restore-yarn-cache:
     description: "Restore Yarn cache"
     steps:
@@ -97,6 +101,8 @@ jobs:
           command: echo "The current run name is $CIRCLE_JOB"
       - attach_workspace:
           at: .
+      - run:
+          command: cat hello.txt
 
   deploy_dev:
     executor: base
