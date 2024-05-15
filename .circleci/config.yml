@@ -12,5 +12,8 @@ workflows:
           name: check-changed-files
           mapping: |
             package.json|yarn.lock|packages/*/* run-build-test-ts true
+            scala/*/* run-build-test-scala true
+            santa_barbara_restore/*/* run-build-test-santa_barbara-restore true
+            .circleci/* run-circleci-config true
           config-path: .circleci/continue_config.yml
           base-revision: << pipeline.git.base_revision >>
